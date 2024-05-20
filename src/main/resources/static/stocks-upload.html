@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocks Information</title>
+</head>
+<body>
+<h1>Stocks Information Upload</h1>
+
+<!-- Upload Instrument Form -->
+<h2>Upload Instruments here</h2>
+<form id="uploadInstrumentForm" action="/stocks/instruments/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".xlsx,.xls">
+    <button type="submit">Upload Instruments</button>
+</form>
+
+<!-- Upload Holding-units Form -->
+<h2>Upload Holding Units here</h2>
+<form id="uploadHoldingUnitForm" action="/stocks/holding-units/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".xlsx,.xls">
+    <button type="submit">Upload Holding Units</button>
+</form>
+</body>
+</html>
