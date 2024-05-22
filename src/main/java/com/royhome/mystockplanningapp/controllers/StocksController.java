@@ -111,7 +111,6 @@ public class StocksController {
                 instrument.setIndustryName(row.getCell(1).getStringCellValue());
                 instrument.setStockInstrumentName(row.getCell(2).getStringCellValue());
                 instrument.setExchange(row.getCell(3).getStringCellValue());
-                instrument.setCurrentPrice((Double) row.getCell(4).getNumericCellValue());
 
                 instruments.add(instrument);
             }
@@ -120,10 +119,10 @@ public class StocksController {
 
             instruments = stocksService.saveStockInstruments(instruments);
 
-            sheet.getRow(0).createCell(5).setCellValue("status");
+            sheet.getRow(0).createCell(4).setCellValue("status");
             int i = 1;
             for(StockInstrumentDto instrument : instruments) {
-                sheet.getRow(i).createCell(5).setCellValue(instrument.getStatus());
+                sheet.getRow(i).createCell(4).setCellValue(instrument.getStatus());
                 i++;
             }
 
@@ -172,10 +171,10 @@ public class StocksController {
             // Process the data (e.g., save to database)
             stockPrices = stocksService.updateStockInstruments(stockPrices);
 
-            sheet.getRow(0).createCell(3).setCellValue("Status");
+            sheet.getRow(0).createCell(2).setCellValue("Status");
             int i = 1;
             for(StockPriceDto stockPrice : stockPrices) {
-                sheet.getRow(i).createCell(3).setCellValue(stockPrice.getStatus());
+                sheet.getRow(i).createCell(2).setCellValue(stockPrice.getStatus());
                 i++;
             }
 

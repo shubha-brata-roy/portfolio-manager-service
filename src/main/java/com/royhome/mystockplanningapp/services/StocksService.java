@@ -4,7 +4,7 @@ import com.royhome.mystockplanningapp.commons.ChargesAndTaxes;
 import com.royhome.mystockplanningapp.dtos.StockHoldingUnitDto;
 import com.royhome.mystockplanningapp.dtos.StockInstrumentDto;
 import com.royhome.mystockplanningapp.dtos.StockPriceDto;
-import com.royhome.mystockplanningapp.models.stocks.StockCategory;
+import com.royhome.mystockplanningapp.models.Category;
 import com.royhome.mystockplanningapp.models.Industry;
 import com.royhome.mystockplanningapp.models.stocks.StockHoldingUnit;
 import com.royhome.mystockplanningapp.models.stocks.StockInstrument;
@@ -33,8 +33,8 @@ public class StocksService {
 
     public List<StockInstrumentDto> saveStockInstruments(List<StockInstrumentDto> instruments) {
         for(StockInstrumentDto instrument : instruments) {
-            if(!StockCategory.contains(instrument.getCategoryName())) {
-                instrument.setStatus("Error: Invalid Stock Category Name");
+            if(!Category.contains(instrument.getCategoryName())) {
+                instrument.setStatus("Error: Invalid Category Name");
                 continue;
             }
 
@@ -53,13 +53,9 @@ public class StocksService {
 
             StockInstrument stockInstrument = new StockInstrument();
             stockInstrument.setName(instrument.getStockInstrumentName());
-            stockInstrument.setStockCategory(StockCategory.valueOf(instrument.getCategoryName()));
+            stockInstrument.setCategory(Category.valueOf(instrument.getCategoryName()));
             stockInstrument.setIndustry(Industry.valueOf(instrument.getIndustryName()));
             stockInstrument.setExchange(instrument.getExchange());
-            if(instrument.getCurrentPrice() != null) {
-                stockInstrument.setCurrentPrice(instrument.getCurrentPrice());
-                stockInstrument.setCurrentPriceUpdatedOn(new Date());
-            }
 
             stockInstrument.setCreatedAt(new Date());
             stockInstrument.setUpdatedAt(new Date());
@@ -117,17 +113,20 @@ public class StocksService {
 
             StockHoldingUnit holdingUnit = new StockHoldingUnit();
 
+            // total amount of purchase in this holding unit
             double purchasedValue = stockHoldingUnitDto.getPurchasedPrice() * stockHoldingUnitDto.getPurchasedQuantity();
 
+            // total amount invested in the stock instrument so far
             double totalAmountInvested = stockInstrument.getTotalAmountInvested() == null ?
                                             0d : stockInstrument.getTotalAmountInvested();
+
+            // new total amount invested after adding the purchasedValue
             totalAmountInvested += purchasedValue;
 
             stockInstrument.setTotalAmountInvested(totalAmountInvested);
             stockInstrument.setTotalAmountInvestedUpdatedOn(new Date());
 
-            // Charges and Taxes
-
+            // calculate and save Charges and Taxes
             Double securitiesTransactionTax = purchasedValue * ChargesAndTaxes.SECURITIES_TRANSACTION_TAX_RATE;
             Double nseTransactionCharges = purchasedValue * ChargesAndTaxes.NSE_TRANSACTION_CHARGES;
             Double sebiCharges = purchasedValue * ChargesAndTaxes.SEBI_CHARGES;
@@ -135,12 +134,6 @@ public class StocksService {
             Double gst = (nseTransactionCharges + sebiCharges) * ChargesAndTaxes.GST_RATE;
 
             Double totalCharges = securitiesTransactionTax + nseTransactionCharges + sebiCharges + stampDutyCharges + gst;
-
-            // Total price calculated after adding total charges and saved to the writer object holdingUnit
-
-            holdingUnit.setPurchasedDate(stockHoldingUnitDto.getPurchasedDate());
-            holdingUnit.setPurchasedPrice(stockHoldingUnitDto.getPurchasedPrice());
-            holdingUnit.setPurchasedQuantity(stockHoldingUnitDto.getPurchasedQuantity());
             holdingUnit.setSecuritiesTransactionTax(securitiesTransactionTax);
             holdingUnit.setNseTransactionCharges(nseTransactionCharges);
             holdingUnit.setSebiCharges(sebiCharges);
@@ -148,11 +141,15 @@ public class StocksService {
             holdingUnit.setGst(gst);
             holdingUnit.setTotalCharges(totalCharges);
 
+            // purchased Date, Price and Quantity saved in Holding unit
+            holdingUnit.setPurchasedDate(stockHoldingUnitDto.getPurchasedDate());
+            holdingUnit.setPurchasedPrice(stockHoldingUnitDto.getPurchasedPrice());
+            holdingUnit.setPurchasedQuantity(stockHoldingUnitDto.getPurchasedQuantity());
+
             holdingUnit.setCreatedAt(new Date());
             holdingUnit.setUpdatedAt(new Date());
 
             // set average purchased price logic: This should be changed whenever a holding unit is added
-
             int currentHoldingQuantity = stockInstrument.getTotalHoldingQuantity() == null ?
                                                                         0 : stockInstrument.getTotalHoldingQuantity();
             int newHoldingQuantity = currentHoldingQuantity + stockHoldingUnitDto.getPurchasedQuantity();
@@ -168,7 +165,6 @@ public class StocksService {
             stockInstrument.setAveragePurchasedPrice(newAverage);
 
             // set last purchased price logic: This should be changed whenever a holding unit is added, also add the date when the last price is updated
-
             Date lastPurchasedDate = stockInstrument.getLastPurchasedOn();
 
             if(lastPurchasedDate == null || lastPurchasedDate.before(holdingUnit.getPurchasedDate())) {
@@ -177,7 +173,6 @@ public class StocksService {
             }
 
             // set lowest purchased price logic: This should be changed whenever a holding unit is added, also add the date when the lowest price is updated
-
             Double lowestPurchasedPrice = stockInstrument.getLowestPurchasedPrice();
 
             if(lowestPurchasedPrice == null || lowestPurchasedPrice > holdingUnit.getPurchasedPrice()) {
@@ -186,7 +181,6 @@ public class StocksService {
             }
 
             // set highest purchased price logic: This should be changed whenever a holding unit is added, also add the date when the lowest price is updated
-
             Double highestPurchasedPrice = stockInstrument.getHighestPurchasedPrice();
 
             if(highestPurchasedPrice == null || highestPurchasedPrice < holdingUnit.getPurchasedPrice()) {

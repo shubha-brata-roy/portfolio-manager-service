@@ -1,6 +1,6 @@
-package com.royhome.mystockplanningapp.models.mutualfunds;
+package com.royhome.mystockplanningapp.models;
 
-public enum MutualFundCategory {
+public enum SubCategory {
     LARGE_CAP_FUND,
     FLEXI_CAP_FUND,
     VALUE_FUND,
@@ -12,10 +12,12 @@ public enum MutualFundCategory {
     INDEX_FUND,
     FOCUSED_FUND,
     FUND_OF_FUNDS_GOLD,
-    MICRO_CAP_FUND;
+    MICRO_CAP_FUND,
+    MONEY_MARKET_FUND,
+    ULTRA_SHORT_DURATION_FUND;
 
     public static boolean contains(String category) {
-        for(MutualFundCategory c : MutualFundCategory.values()) {
+        for(SubCategory c : SubCategory.values()) {
             if(c.name().equals(category)) {
                 return true;
             }

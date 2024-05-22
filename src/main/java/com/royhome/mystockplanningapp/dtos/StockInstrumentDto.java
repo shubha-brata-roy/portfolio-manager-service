@@ -12,7 +12,6 @@ public class StockInstrumentDto {
     private String industryName;
     private String stockInstrumentName;
     private String exchange;
-    private Double currentPrice;
 
     private String status;
 }

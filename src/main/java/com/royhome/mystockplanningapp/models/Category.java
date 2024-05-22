@@ -1,15 +1,15 @@
-package com.royhome.mystockplanningapp.models.stocks;
+package com.royhome.mystockplanningapp.models;
 
-public enum StockCategory {
+public enum Category {
      EQUITY_STOCK,
      DEBT_STOCK,
      EQUITY_MUTUAL_FUND,
      DEBT_MUTUAL_FUND,
-     GOLD,
+     GOLD_MUTUAL_FUND,
      INDEX;
 
      public static boolean contains(String category) {
-          for(StockCategory c : StockCategory.values()) {
+          for(Category c : Category.values()) {
                if(c.name().equals(category)) {
                     return true;
                }

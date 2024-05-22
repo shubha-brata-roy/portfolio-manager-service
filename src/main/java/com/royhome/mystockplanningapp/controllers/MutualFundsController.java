@@ -52,9 +52,22 @@ public class MutualFundsController {
                 // Here the data for each record is getting read
                 MutualFundHoldingUnitDto holdingUnit = new MutualFundHoldingUnitDto();
 
-                holdingUnit.setMutualFundInstrumentName(row.getCell(0).getStringCellValue());
-                holdingUnit.setPurchasedDate((Date) row.getCell(1).getDateCellValue());
-                holdingUnit.setPurchasedAmount((Double) row.getCell(2).getNumericCellValue());
+                holdingUnit.setIsin(row.getCell(0).getStringCellValue());
+                holdingUnit.setMutualFundInstrumentName(row.getCell(1).getStringCellValue());
+                holdingUnit.setPlanType(row.getCell(2).getStringCellValue());
+                holdingUnit.setTransactionType(row.getCell(3).getStringCellValue());
+                holdingUnit.setSettlementId((long)row.getCell(4).getNumericCellValue());
+                if(holdingUnit.getSettlementId() == 0) {
+                    holdingUnit.setSettlementId(null);
+                }
+                holdingUnit.setPurchasedDate((Date) row.getCell(5).getDateCellValue());
+                holdingUnit.setPurchasedAmount((Double) row.getCell(6).getNumericCellValue());
+                holdingUnit.setPurchasedUnits((Double) row.getCell(7).getNumericCellValue());
+                holdingUnit.setPurchasedNAV((Double) row.getCell(8).getNumericCellValue());
+                holdingUnit.setExchangeOrderId((long)row.getCell(9).getNumericCellValue());
+                if(holdingUnit.getExchangeOrderId() == 0) {
+                    holdingUnit.setExchangeOrderId(null);
+                }
                 mutualFundHoldingUnitDtos.add(holdingUnit);
             }
 
@@ -62,10 +75,10 @@ public class MutualFundsController {
 
             mutualFundHoldingUnitDtos = mutualFundsService.saveMutualFundHoldingUnits(mutualFundHoldingUnitDtos);
 
-            sheet.getRow(0).createCell(3).setCellValue("status");
+            sheet.getRow(0).createCell(10).setCellValue("status");
             int i = 1;
             for(MutualFundHoldingUnitDto holdingUnit : mutualFundHoldingUnitDtos) {
-                sheet.getRow(i).createCell(3).setCellValue(holdingUnit.getStatus());
+                sheet.getRow(i).createCell(10).setCellValue(holdingUnit.getStatus());
                 i++;
             }
 
@@ -105,7 +118,10 @@ public class MutualFundsController {
                 MutualFundInstrumentDto instrumentDto = new MutualFundInstrumentDto();
 
                 instrumentDto.setCategoryName(row.getCell(0).getStringCellValue());
-                instrumentDto.setMutualFundInstrumentName(row.getCell(1).getStringCellValue());
+                instrumentDto.setSubCategoryName(row.getCell(1).getStringCellValue());
+                instrumentDto.setMutualFundInstrumentName(row.getCell(2).getStringCellValue());
+                instrumentDto.setPlanType(row.getCell(3).getStringCellValue());
+                instrumentDto.setFolioNumber(row.getCell(4).getStringCellValue());
                 mutualFundInstrumentDtos.add(instrumentDto);
             }
 
@@ -113,10 +129,10 @@ public class MutualFundsController {
 
             mutualFundInstrumentDtos = mutualFundsService.saveMutualFundInstruments(mutualFundInstrumentDtos);
 
-            sheet.getRow(0).createCell(2).setCellValue("status");
+            sheet.getRow(0).createCell(5).setCellValue("status");
             int i = 1;
             for(MutualFundInstrumentDto instrumentDto : mutualFundInstrumentDtos) {
-                sheet.getRow(i).createCell(2).setCellValue(instrumentDto.getStatus());
+                sheet.getRow(i).createCell(5).setCellValue(instrumentDto.getStatus());
                 i++;
             }
 
@@ -156,7 +172,9 @@ public class MutualFundsController {
                 MutualFundCurrentMarketValueDto currentMarketValue = new MutualFundCurrentMarketValueDto();
 
                 currentMarketValue.setMutualFundInstrumentName(row.getCell(0).getStringCellValue());
-                currentMarketValue.setTotalCurrentMarketValue((Double) row.getCell(1).getNumericCellValue());
+                currentMarketValue.setPlanType(row.getCell(1).getStringCellValue());
+                currentMarketValue.setTotalCurrentMarketValue((Double) row.getCell(2).getNumericCellValue());
+                currentMarketValue.setCurrentNAV((Double) row.getCell(3).getNumericCellValue());
 
                 currentMarketValueDtos.add(currentMarketValue);
             }
@@ -164,10 +182,10 @@ public class MutualFundsController {
             // Process the data (e.g., save to database)
             currentMarketValueDtos = mutualFundsService.updateStockInstruments(currentMarketValueDtos);
 
-            sheet.getRow(0).createCell(3).setCellValue("Status");
+            sheet.getRow(0).createCell(4).setCellValue("Status");
             int i = 1;
             for(MutualFundCurrentMarketValueDto currentMarketValue : currentMarketValueDtos) {
-                sheet.getRow(i).createCell(3).setCellValue(currentMarketValue.getStatus());
+                sheet.getRow(i).createCell(4).setCellValue(currentMarketValue.getStatus());
                 i++;
             }
 

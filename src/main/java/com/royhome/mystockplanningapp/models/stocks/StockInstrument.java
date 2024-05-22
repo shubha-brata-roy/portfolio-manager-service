@@ -1,6 +1,7 @@
 package com.royhome.mystockplanningapp.models.stocks;
 
 import com.royhome.mystockplanningapp.models.BaseModel;
+import com.royhome.mystockplanningapp.models.Category;
 import com.royhome.mystockplanningapp.models.Financials;
 import com.royhome.mystockplanningapp.models.Industry;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import java.util.Date;
 public class StockInstrument extends BaseModel {
 
     @Enumerated(EnumType.STRING)
-    private StockCategory stockCategory;
+    private Category category;
 
     @Enumerated(EnumType.STRING)
     private Industry industry;

@@ -1,7 +1,6 @@
 package com.royhome.mystockplanningapp.models.mutualfunds;
 
-import com.royhome.mystockplanningapp.models.BaseModel;
-import com.royhome.mystockplanningapp.models.Financials;
+import com.royhome.mystockplanningapp.models.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,12 +17,23 @@ public class MutualFundInstrument extends BaseModel {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    private MutualFundCategory category;
+    private Category category;
+
+    @Enumerated(EnumType.STRING)
+    private SubCategory subCategory;
+
+    @Enumerated(EnumType.STRING)
+    private PlanType planType;
+
+    private String folioNumber;
+
+    private Double totalHoldingUnits;
+    private Double currentNAV;
 
     private Double totalAmountInvested;
     private Date totalAmountInvestedUpdatedOn;
-    private Double totalCurrentMarketValue;
-    private Date totalCurrentMarketValueUpdatedOn;
+    private Double totalCurrentMarketValue;         // ideally totalHoldingUnits * currentNAV
+    private Date currentMarketValueUpdatedOn;
 
     private Double netReturn;
     private Double netReturnRate;
