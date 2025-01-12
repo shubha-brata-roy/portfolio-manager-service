@@ -8,6 +8,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class StockHoldingUnitDto {
+    private String ownerName;
     private String stockInstrumentName;
     private Date purchasedDate;
     private Double purchasedPrice;

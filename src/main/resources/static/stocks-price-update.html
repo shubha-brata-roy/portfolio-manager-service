@@ -3,16 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Current Price</title>
+    <title>Stock Price Update App</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
-<h1>Stocks Price Update</h1>
+    <h1>Stock Price Update</h1>
+    <table id="stockTable">
+        <thead>
+            <tr>
+                <th>Stock Name</th>
+                <th>Current Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be added here dynamically -->
+        </tbody>
+    </table>
+    <button onclick="addRow()">Add Row</button>
+    <button onclick="submitData()">Submit</button>
 
-<!-- Form to Update Stocks Current Price Details -->
-<form id="priceForm" action="/stocks/instruments/current-price" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" accept=".xlsx,.xls">
-    <button type="submit">Update Current Price Data</button>
-</form>
-
+    <script src="stocks-price-update-script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 </body>
 </html>

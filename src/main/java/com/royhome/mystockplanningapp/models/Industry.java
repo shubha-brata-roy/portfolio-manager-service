@@ -9,7 +9,8 @@ public enum Industry {
     MATERIALS,
     COMMUNICATION_SERVICES,
     ENERGY,
-    CONSUMER_DISCRETIONARY;
+    CONSUMER_DISCRETIONARY,
+    INDEX;
 
     public static boolean contains(String industry) {
         for(Industry i : Industry.values()) {

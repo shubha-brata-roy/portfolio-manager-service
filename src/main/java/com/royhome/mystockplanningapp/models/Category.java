@@ -6,7 +6,7 @@ public enum Category {
      EQUITY_MUTUAL_FUND,
      DEBT_MUTUAL_FUND,
      GOLD_MUTUAL_FUND,
-     INDEX;
+     EXCHANGE_TRADED_FUND;
 
      public static boolean contains(String category) {
           for(Category c : Category.values()) {

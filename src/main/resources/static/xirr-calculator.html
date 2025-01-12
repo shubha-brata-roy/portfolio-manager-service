@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Metrics Calculator</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .action-button {
+            color: white;
+            background-color: red;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .action-button.submitted {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Growth Metrics Calculator</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Instrument Name</th>
+                <th>Category</th>
+                <th><button id="generate-master-sheet-btn">Generate Master Sheet</button></th>
+                <th>Enter XIRR</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="metrics-table-body">
+            <!-- Rows will be populated here -->
+        </tbody>
+    </table>
+
+    <script src="xirr-calculator-script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+</body>
+</html>

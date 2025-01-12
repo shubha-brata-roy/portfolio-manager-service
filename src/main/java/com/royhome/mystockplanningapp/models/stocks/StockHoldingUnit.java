@@ -1,6 +1,7 @@
 package com.royhome.mystockplanningapp.models.stocks;
 
 import com.royhome.mystockplanningapp.models.BaseModel;
+import com.royhome.mystockplanningapp.models.Owner;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
@@ -14,7 +15,11 @@ import java.util.Date;
 public class StockHoldingUnit extends BaseModel {
 
     @ManyToOne
+    private Owner owner;
+
+    @ManyToOne
     private StockInstrument stockInstrument;
+
     private Date purchasedDate;
     private Double purchasedPrice;
     private Integer purchasedQuantity;

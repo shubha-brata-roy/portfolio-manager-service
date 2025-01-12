@@ -8,6 +8,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class MutualFundHoldingUnitDto {
+    private String ownerName;
     private String isin;
     private String mutualFundInstrumentName;
     private String planType;

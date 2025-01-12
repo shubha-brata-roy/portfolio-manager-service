@@ -52,10 +52,11 @@ public class StocksController {
                 // Here the data for each record is getting read
                 StockHoldingUnitDto holdingUnit = new StockHoldingUnitDto();
 
-                holdingUnit.setStockInstrumentName(row.getCell(0).getStringCellValue());
-                holdingUnit.setPurchasedDate((Date) row.getCell(1).getDateCellValue());
-                holdingUnit.setPurchasedPrice((Double) row.getCell(2).getNumericCellValue());
-                holdingUnit.setPurchasedQuantity((int) row.getCell(3).getNumericCellValue());
+                holdingUnit.setOwnerName(row.getCell(0).getStringCellValue());
+                holdingUnit.setStockInstrumentName(row.getCell(1).getStringCellValue());
+                holdingUnit.setPurchasedDate((Date) row.getCell(2).getDateCellValue());
+                holdingUnit.setPurchasedPrice((Double) row.getCell(3).getNumericCellValue());
+                holdingUnit.setPurchasedQuantity((int) row.getCell(4).getNumericCellValue());
                 stockHoldingUnits.add(holdingUnit);
             }
 
@@ -63,12 +64,12 @@ public class StocksController {
 
             stockHoldingUnits = stocksService.saveStockHoldingUnits(stockHoldingUnits);
 
-            sheet.getRow(0).createCell(4).setCellValue("charges_and_taxes");
-            sheet.getRow(0).createCell(5).setCellValue("status");
+            sheet.getRow(0).createCell(5).setCellValue("charges_and_taxes");
+            sheet.getRow(0).createCell(6).setCellValue("status");
             int i = 1;
             for(StockHoldingUnitDto holdingUnit : stockHoldingUnits) {
-                sheet.getRow(i).createCell(4).setCellValue(holdingUnit.getChargesAndTaxes());
-                sheet.getRow(i).createCell(5).setCellValue(holdingUnit.getStatus());
+                sheet.getRow(i).createCell(5).setCellValue(holdingUnit.getChargesAndTaxes());
+                sheet.getRow(i).createCell(6).setCellValue(holdingUnit.getStatus());
                 i++;
             }
 
@@ -144,7 +145,7 @@ public class StocksController {
 
     @PostMapping("/instruments/current-price")
     public ResponseEntity<String> updateInstrumentsCurrentPrice(@RequestParam("file") MultipartFile file,
-                                                                             HttpServletResponse response) {
+                                                                HttpServletResponse response) {
         try {
             // Load the Excel file
             Workbook workbook = new XSSFWorkbook(file.getInputStream());
@@ -191,5 +192,22 @@ public class StocksController {
             e.printStackTrace();
             return new ResponseEntity<>("Error: Excel Column Mismatch", HttpStatus.BAD_REQUEST);
         }
+    }
+
+
+    @PutMapping("/instruments/current-price")
+    public ResponseEntity<List<StockPriceDto>> updateInstrumentsCurrentPrice(@RequestBody List<StockPriceDto> stockPrices,
+                                                                HttpServletResponse response) {
+
+            // Process the data (e.g., save to database)
+            stockPrices = stocksService.updateStockInstruments(stockPrices);
+            return new ResponseEntity<>(stockPrices, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/instruments/current-price")
+    public ResponseEntity<List<StockPriceDto>> getInstrumentsCurrentPrice() {
+        List<StockPriceDto> stockPrices = stocksService.getInstrumentsCurrentPrice();
+        return new ResponseEntity<>(stockPrices, HttpStatus.OK);
     }
 }

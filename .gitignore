@@ -35,3 +35,4 @@ build/
 ### DataLoad ###
 /data-upload/
 /schema.xlsx
+/xirr-sheet-download/

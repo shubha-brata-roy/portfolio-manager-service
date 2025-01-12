@@ -6,14 +6,17 @@ import com.royhome.mystockplanningapp.dtos.StockInstrumentDto;
 import com.royhome.mystockplanningapp.dtos.StockPriceDto;
 import com.royhome.mystockplanningapp.models.Category;
 import com.royhome.mystockplanningapp.models.Industry;
+import com.royhome.mystockplanningapp.models.Owner;
 import com.royhome.mystockplanningapp.models.stocks.StockHoldingUnit;
 import com.royhome.mystockplanningapp.models.stocks.StockInstrument;
+import com.royhome.mystockplanningapp.repositories.OwnerRepository;
 import com.royhome.mystockplanningapp.repositories.StockHoldingUnitRepository;
 import com.royhome.mystockplanningapp.repositories.StockInstrumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,12 +26,15 @@ public class StocksService {
 
     private final StockInstrumentRepository stockInstrumentRepository;
     private final StockHoldingUnitRepository stockHoldingUnitRepository;
+    private final OwnerRepository ownerRepository;
 
     @Autowired
     public StocksService(StockInstrumentRepository stockInstrumentRepository,
-                         StockHoldingUnitRepository stockHoldingUnitRepository) {
+                         StockHoldingUnitRepository stockHoldingUnitRepository,
+                         OwnerRepository ownerRepository) {
         this.stockInstrumentRepository = stockInstrumentRepository;
         this.stockHoldingUnitRepository = stockHoldingUnitRepository;
+        this.ownerRepository = ownerRepository;
     }
 
     public List<StockInstrumentDto> saveStockInstruments(List<StockInstrumentDto> instruments) {
@@ -86,7 +92,7 @@ public class StocksService {
             stockInstrument.setCurrentPrice(stockPrice.getCurrentPrice());
             stockInstrument.setCurrentPriceUpdatedOn(new Date());
 
-            double totalCurrentMarketValue = stockInstrument.getTotalHoldingQuantity() * stockPrice.getCurrentPrice();
+            double totalCurrentMarketValue = stockInstrument.getTotalHoldingQuantity() * stockInstrument.getCurrentPrice();
             stockInstrument.setTotalCurrentMarketValue(totalCurrentMarketValue);
             stockInstrument.setTotalCurrentMarketValueUpdatedOn(new Date());
 
@@ -101,6 +107,9 @@ public class StocksService {
 
     public List<StockHoldingUnitDto> saveStockHoldingUnits(List<StockHoldingUnitDto> stockHoldingUnits) {
         for(StockHoldingUnitDto stockHoldingUnitDto : stockHoldingUnits) {
+
+            StockHoldingUnit holdingUnit = new StockHoldingUnit();
+
             Optional<StockInstrument> stockInstrumentOptional = stockInstrumentRepository.findStockInstrumentByName(
                                                                             stockHoldingUnitDto.getStockInstrumentName());
 
@@ -111,7 +120,15 @@ public class StocksService {
 
             StockInstrument stockInstrument = stockInstrumentOptional.get();
 
-            StockHoldingUnit holdingUnit = new StockHoldingUnit();
+            // set the owner name for the holding unit
+            Optional<Owner> ownerOptional = ownerRepository.findOwnerByName(stockHoldingUnitDto.getOwnerName());
+
+            if(ownerOptional.isEmpty()) {
+                stockHoldingUnitDto.setStatus("Error: Invalid Owner Name");
+                continue;
+            }
+
+            holdingUnit.setOwner(ownerOptional.get());
 
             // total amount of purchase in this holding unit
             double purchasedValue = stockHoldingUnitDto.getPurchasedPrice() * stockHoldingUnitDto.getPurchasedQuantity();
@@ -164,19 +181,20 @@ public class StocksService {
             stockInstrument.setTotalHoldingQuantity(newHoldingQuantity);
             stockInstrument.setAveragePurchasedPrice(newAverage);
 
+            double purchasedPrice = holdingUnit.getPurchasedPrice();
             // set last purchased price logic: This should be changed whenever a holding unit is added, also add the date when the last price is updated
             Date lastPurchasedDate = stockInstrument.getLastPurchasedOn();
 
-            if(lastPurchasedDate == null || lastPurchasedDate.before(holdingUnit.getPurchasedDate())) {
+            if(purchasedPrice != 0d && (lastPurchasedDate == null || lastPurchasedDate.before(holdingUnit.getPurchasedDate()))) {
                 stockInstrument.setLastPurchasedOn(holdingUnit.getPurchasedDate());
-                stockInstrument.setLastPurchasedPrice(holdingUnit.getPurchasedPrice());
+                stockInstrument.setLastPurchasedPrice(purchasedPrice);
             }
 
             // set lowest purchased price logic: This should be changed whenever a holding unit is added, also add the date when the lowest price is updated
             Double lowestPurchasedPrice = stockInstrument.getLowestPurchasedPrice();
 
-            if(lowestPurchasedPrice == null || lowestPurchasedPrice > holdingUnit.getPurchasedPrice()) {
-                stockInstrument.setLowestPurchasedPrice(holdingUnit.getPurchasedPrice());
+            if(purchasedPrice != 0d && (lowestPurchasedPrice == null || lowestPurchasedPrice > purchasedPrice)) {
+                stockInstrument.setLowestPurchasedPrice(purchasedPrice);
                 stockInstrument.setLowestPurchasedOn(holdingUnit.getPurchasedDate());
             }
 
@@ -198,5 +216,19 @@ public class StocksService {
             stockHoldingUnitDto.setStatus("Success: Saved");
         }
         return stockHoldingUnits;
+    }
+
+    public List<StockPriceDto> getInstrumentsCurrentPrice() {
+        List<StockInstrument> stockInstruments = stockInstrumentRepository.findAll();
+        List<StockPriceDto> stockPrices = new ArrayList<>();
+
+        for(StockInstrument stockInstrument : stockInstruments) {
+            StockPriceDto stockPrice = new StockPriceDto();
+            stockPrice.setStockInstrumentName(stockInstrument.getName());
+            stockPrice.setCurrentPrice(stockInstrument.getCurrentPrice());
+            stockPrices.add(stockPrice);
+        }
+
+        return stockPrices;
     }
 }

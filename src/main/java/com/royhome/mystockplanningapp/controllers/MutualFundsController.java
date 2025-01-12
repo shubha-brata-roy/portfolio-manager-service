@@ -3,6 +3,7 @@ package com.royhome.mystockplanningapp.controllers;
 import com.royhome.mystockplanningapp.dtos.*;
 import com.royhome.mystockplanningapp.services.MutualFundsService;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -52,22 +53,36 @@ public class MutualFundsController {
                 // Here the data for each record is getting read
                 MutualFundHoldingUnitDto holdingUnit = new MutualFundHoldingUnitDto();
 
-                holdingUnit.setIsin(row.getCell(0).getStringCellValue());
-                holdingUnit.setMutualFundInstrumentName(row.getCell(1).getStringCellValue());
-                holdingUnit.setPlanType(row.getCell(2).getStringCellValue());
-                holdingUnit.setTransactionType(row.getCell(3).getStringCellValue());
-                holdingUnit.setSettlementId((long)row.getCell(4).getNumericCellValue());
-                if(holdingUnit.getSettlementId() == 0) {
+                holdingUnit.setOwnerName(row.getCell(0).getStringCellValue());
+
+                Cell cell = row.getCell(1);
+                if(cell == null) {
+                    holdingUnit.setIsin(null);
+                } else {
+                    holdingUnit.setIsin(row.getCell(1).getStringCellValue());
+                }
+                holdingUnit.setMutualFundInstrumentName(row.getCell(2).getStringCellValue());
+                holdingUnit.setPlanType(row.getCell(3).getStringCellValue());
+                holdingUnit.setTransactionType(row.getCell(4).getStringCellValue());
+
+                cell = row.getCell(5);
+                if(cell == null) {
                     holdingUnit.setSettlementId(null);
+                } else {
+                    holdingUnit.setSettlementId((long)row.getCell(5).getNumericCellValue());
                 }
-                holdingUnit.setPurchasedDate((Date) row.getCell(5).getDateCellValue());
-                holdingUnit.setPurchasedAmount((Double) row.getCell(6).getNumericCellValue());
-                holdingUnit.setPurchasedUnits((Double) row.getCell(7).getNumericCellValue());
-                holdingUnit.setPurchasedNAV((Double) row.getCell(8).getNumericCellValue());
-                holdingUnit.setExchangeOrderId((long)row.getCell(9).getNumericCellValue());
-                if(holdingUnit.getExchangeOrderId() == 0) {
+                holdingUnit.setPurchasedDate((Date) row.getCell(6).getDateCellValue());
+                holdingUnit.setPurchasedAmount((Double) row.getCell(7).getNumericCellValue());
+                holdingUnit.setPurchasedUnits((Double) row.getCell(8).getNumericCellValue());
+                holdingUnit.setPurchasedNAV((Double) row.getCell(9).getNumericCellValue());
+
+                cell = row.getCell(10);
+                if(cell == null) {
                     holdingUnit.setExchangeOrderId(null);
+                } else {
+                    holdingUnit.setExchangeOrderId((long) row.getCell(10).getNumericCellValue());
                 }
+
                 mutualFundHoldingUnitDtos.add(holdingUnit);
             }
 
@@ -75,10 +90,10 @@ public class MutualFundsController {
 
             mutualFundHoldingUnitDtos = mutualFundsService.saveMutualFundHoldingUnits(mutualFundHoldingUnitDtos);
 
-            sheet.getRow(0).createCell(10).setCellValue("status");
+            sheet.getRow(0).createCell(11).setCellValue("status");
             int i = 1;
             for(MutualFundHoldingUnitDto holdingUnit : mutualFundHoldingUnitDtos) {
-                sheet.getRow(i).createCell(10).setCellValue(holdingUnit.getStatus());
+                sheet.getRow(i).createCell(11).setCellValue(holdingUnit.getStatus());
                 i++;
             }
 
